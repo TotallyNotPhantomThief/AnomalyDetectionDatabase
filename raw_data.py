@@ -28,5 +28,28 @@ def datas_of_database(num_of_records=1000):
             amount_of_expense = round(random.uniform(5000, 9999),5)
         else:
             amount_of_expense = round(random.uniform(1, 4999),5)
-        records.append((user_id,location,category_of_expense,time_of_action,is_an_anomaly,amount_of_expense))        
+        records.append((user_id,location,category_of_expense,time_of_action,is_an_anomaly,amount_of_expense))     
+
+        insert_query = """
+    INSERT INTO recorded_transactions_of_money 
+    (users_id, transfered_amount, location_of_transfer, category_of_spent, transfer_time, flagged_as_anomaly)
+    VALUES (%s, %s, %s, %s, %s, %s);
+    """
+
+    cursor.executemany(insert_query, records)
+    conn.commit()   
+    cursor.close()
+    conn.close()
+
+    if __name__ == "__main__":
+        datas_of_database()
+    
+        
+
+
+
+    
+
+
+
 
