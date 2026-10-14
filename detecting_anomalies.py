@@ -13,7 +13,7 @@ db_config = {
 }
 
 def run_detection_anomaly():
-    conn = psycopg2.connect(db_config)
+    conn = psycopg2.connect(**db_config)
 
     print("Taking data from database.")
     query = "" "SELECT transaction_id, users_id, transfered_amout, flagged_as_anomaly FROM recorded_transactions_of_money;"""
