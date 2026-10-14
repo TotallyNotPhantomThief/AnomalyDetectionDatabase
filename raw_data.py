@@ -28,7 +28,7 @@ def datas_of_database(num_of_records=1000):
             amount_of_expense = round(random.uniform(5000, 9999),5)
         else:
             amount_of_expense = round(random.uniform(1, 4999),5)
-        records.append((users_id,location,category_of_expense,time_of_action,is_an_anomaly,amount_of_expense))     
+        records.append((users_id,amount_of_expense,location,category_of_expense,time_of_action,is_an_anomaly))     
 
         insert_query = """
     INSERT INTO recorded_transactions_of_money 
