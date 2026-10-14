@@ -1,7 +1,7 @@
 import pandas as pd
 import psycopg2
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import precision_score,recall_score
+from sklearn.metrics import precision_score,recall_score,f1_score
 
 
 db_config = {
@@ -39,7 +39,7 @@ def run_detection_anomaly():
 
     precision = precision_score(is_true,the_truth,zero_division=0)
     recall = recall_score(is_true,the_truth,zero_division=0)
-
+    f1 = f1_score(is_true,the_truth,zero_division=0)
 
     print(f"Performance of the algorithm;  Presicion: {precision:.2f} ,  Recall: {recall:.2f}  ")
     cursor = conn.cursor()
@@ -54,6 +54,9 @@ def run_detection_anomaly():
     INSERT INTO learning_algorithm (algorithm_name, presicion_score, score_of_error)
     VALUES (%s, %s, %s);
     """
+    error_score = 1.0 - f1
+    cursor.execute(insert_metrics,("Isolation Forset", precision,error_score)
+    )
 
 
 
