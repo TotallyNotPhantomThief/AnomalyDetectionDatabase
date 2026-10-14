@@ -41,12 +41,12 @@ def datas_of_database(num_of_records=1000):
     cursor.close()
     conn.close()
 
-    if __name__ == "__main__":
-        datas_of_database()
-    
+   
         
 
-
+if __name__ == "__main__":
+        datas_of_database()
+    
 
     
 
