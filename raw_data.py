@@ -32,7 +32,7 @@ def datas_of_database(num_of_records=1000):
 
         insert_query = """
     INSERT INTO recorded_transactions_of_money 
-    (users_id, transfered_amount, location_of_transfer, category_of_spent, transfer_time, flagged_as_anomaly)
+    (user_id, transfered_amount, location_of_transfer, category_of_spent, transfer_time, flagged_as_anomaly)
     VALUES (%s, %s, %s, %s, %s, %s);
     """
 
