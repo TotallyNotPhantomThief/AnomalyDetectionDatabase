@@ -16,7 +16,7 @@ def run_detection_anomaly():
     conn = psycopg2.connect(**db_config)
 
     print("Taking data from database.")
-    query = "" "SELECT transaction_id, users_id, transfered_amout, flagged_as_anomaly FROM recorded_transactions_of_money;"""
+    query = """SELECT transaction_id, users_id, transfered_amount, flagged_as_anomaly FROM recorded_transactions_of_money;"""
     df = pd.read_sql(query,conn)
 
     x = df[["transfered_amount"]]
@@ -26,7 +26,7 @@ def run_detection_anomaly():
 
 
     raw_score  = model.decision_function(x)
-    df["anomaly_probabilty_score"] = (
+    df["anomaly_probability_score"] = (
         raw_score.max() - raw_score) / (raw_score.max()- raw_score.min())
 
 
@@ -46,17 +46,24 @@ def run_detection_anomaly():
 
     records_in_detection = [
     (int(row["transaction_id"]),
-     int(row["anomaly_probability_score"]),
-     int(row["is_a_anomaly"])
+     float(row["anomaly_probability_score"]),
+     bool(row["is_a_anomaly"])
     ) for _ , row in df.iterrows()
     ]
-    insert_metrics = """
-    INSERT INTO learning_algorithm (algorithm_name, presicion_score, score_of_error)
+    insert_detection_query = """
+    INSERT INTO anomaly_detections (transaction_id, anomaly_probability_score, is_a_anomaly)
     VALUES (%s, %s, %s);
     """
+    cursor.executemany(insert_detection_query, records_in_detection)
+   
+   
+    insert_metrics = """
+    INSERT INTO learning_algorithm (algorithm_name, presicion_score, score_of_error , f1_score)
+    VALUES (%s, %s, %s, %s);
+    """
     error_score = 1.0 - f1
-    cursor.execute(insert_metrics,("Isolation Forset", precision,error_score)
-    )
+    cursor.execute(insert_metrics, ("Isolation Forset", precision, error_score,f1))
+    
 
 
 
