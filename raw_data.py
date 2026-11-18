@@ -1,10 +1,10 @@
 import random
 from datetime import datetime, timedelta
 import psycopg2
-
+import os
 
 Database_Config = {
-    "host": "localhost",
+    "host": os.environ.get("DB_HOST", "localhost"),
     "port": 5432,
     "database": "anomaly_database",
     "user": "postgres",
