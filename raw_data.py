@@ -11,7 +11,7 @@ Database_Config = {
     "password": "mypassword"
 }
 
-def datas_of_database(num_of_records=1000):
+def datas_of_database(num_of_records=10000):
     conn = psycopg2.connect(**Database_Config)
     cursor = conn.cursor()
     locations = ['New York','İstanbul','London','Paris','Pensilvania','St.Petersburg','Berlin','Osaka','Miami','Rome','Madrid','Chicago','Baghdad','Moscow','New Mexico', 'Kocaeli','Bursa','Ankara','İzmir']
