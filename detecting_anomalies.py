@@ -2,11 +2,11 @@ import pandas as pd
 import psycopg2
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics import precision_score,recall_score,f1_score
-
+from preprocessing import preprocess, build_transformer
 
 db_config = {
     "host": "localhost",
-    "port": 5432,
+    "port": 5433,
     "database": "anomaly_database",
     "user": "postgres",
     "password": "mypassword"
@@ -16,10 +16,9 @@ def run_detection_anomaly():
     conn = psycopg2.connect(**db_config)
 
     print("Taking data from database.")
-    query = """SELECT transaction_id, users_id, transfered_amount, flagged_as_anomaly FROM recorded_transactions_of_money;"""
-    df = pd.read_sql(query,conn)
-
-    x = df[["transfered_amount"]]
+    df = preprocess(conn)
+    transformer = build_transformer()
+    x = transformer.fit_transform(df[["transfered_amount"]])
 
     model = IsolationForest( n_estimators=100, contamination=0.032,random_state=42)
     model.fit(x)
@@ -52,7 +51,11 @@ def run_detection_anomaly():
     ]
     insert_detection_query = """
     INSERT INTO anomaly_detections (transaction_id, anomaly_probability_score, is_a_anomaly)
-    VALUES (%s, %s, %s);
+    VALUES (%s, %s, %s)
+    ON CONFLICT (transaction_id) 
+    DO UPDATE SET 
+        anomaly_probability_score = EXCLUDED.anomaly_probability_score,
+        is_a_anomaly = EXCLUDED.is_a_anomaly;
     """
     cursor.executemany(insert_detection_query, records_in_detection)
    

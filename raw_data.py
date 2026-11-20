@@ -5,13 +5,13 @@ import os
 
 Database_Config = {
     "host": os.environ.get("DB_HOST", "localhost"),
-    "port": 5432,
+    "port": 5433,
     "database": "anomaly_database",
     "user": "postgres",
     "password": "mypassword"
 }
 
-def datas_of_database(num_of_records=10000):
+def datas_of_database(num_of_records=1000):
     conn = psycopg2.connect(**Database_Config)
     cursor = conn.cursor()
     locations = ['New York','İstanbul','London','Paris','Pensilvania','St.Petersburg','Berlin','Osaka','Miami','Rome','Madrid','Chicago','Baghdad','Moscow','New Mexico', 'Kocaeli','Bursa','Ankara','İzmir']
@@ -30,7 +30,7 @@ def datas_of_database(num_of_records=10000):
             amount_of_expense = round(random.uniform(1, 4999),5)
         records.append((users_id,amount_of_expense,location,category_of_expense,time_of_action,is_an_anomaly))     
 
-        insert_query = """
+    insert_query = """
     INSERT INTO recorded_transactions_of_money 
     (users_id, transfered_amount, location_of_transfer, category_of_spent, transfer_time, flagged_as_anomaly)
     VALUES (%s, %s, %s, %s, %s, %s);
