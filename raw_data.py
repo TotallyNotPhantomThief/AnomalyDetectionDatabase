@@ -1,11 +1,14 @@
 import random
 import sys
 from datetime import datetime, timedelta
+
 import psycopg2
+from psycopg2.extras import execute_values
+
 from db_config import get_db_config
 
 
-def datas_of_database(num_of_records=1000, clear_existing=True):
+def datas_of_database(num_of_records=10000, clear_existing=True):
     conn = psycopg2.connect(**get_db_config())
     cursor = conn.cursor()
 
@@ -35,10 +38,10 @@ def datas_of_database(num_of_records=1000, clear_existing=True):
     insert_query = """
     INSERT INTO recorded_transactions_of_money 
     (users_id, transfered_amount, location_of_transfer, category_of_spent, transfer_time, flagged_as_anomaly)
-    VALUES (%s, %s, %s, %s, %s, %s);
+    VALUES %s;
     """
 
-    cursor.executemany(insert_query, records)
+    execute_values(cursor, insert_query, records, page_size=1000)
     conn.commit()
     cursor.close()
     conn.close()
@@ -46,5 +49,5 @@ def datas_of_database(num_of_records=1000, clear_existing=True):
 
 
 if __name__ == "__main__":
- 
+    
     datas_of_database(clear_existing="--keep" not in sys.argv)
