@@ -1,19 +1,21 @@
 import random
+import sys
 from datetime import datetime, timedelta
 import psycopg2
-import os
+from db_config import get_db_config
 
-Database_Config = {
-    "host": os.environ.get("DB_HOST", "localhost"),
-    "port": 5433,
-    "database": "anomaly_database",
-    "user": "postgres",
-    "password": "mypassword"
-}
 
-def datas_of_database(num_of_records=1000):
-    conn = psycopg2.connect(**Database_Config)
+def datas_of_database(num_of_records=1000, clear_existing=True):
+    conn = psycopg2.connect(**get_db_config())
     cursor = conn.cursor()
+
+    if clear_existing:
+        
+        cursor.execute(
+            "TRUNCATE TABLE anomaly_detections, recorded_transactions_of_money RESTART IDENTITY;"
+        )
+        print("Cleared recorded_transactions_of_money and anomaly_detections.")
+
     locations = ['New York','İstanbul','London','Paris','Pensilvania','St.Petersburg','Berlin','Osaka','Miami','Rome','Madrid','Chicago','Baghdad','Moscow','New Mexico', 'Kocaeli','Bursa','Ankara','İzmir']
     catagories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Sports & Outdoors', 'Books', 'Toys & Games', 'Health & Personal Care', 'Beauty', 'Automotive', 'Grocery','Jewelry','Taxes','Insurance','Travel']
     records = []
@@ -28,7 +30,7 @@ def datas_of_database(num_of_records=1000):
             amount_of_expense = round(random.uniform(5000, 9999),5)
         else:
             amount_of_expense = round(random.uniform(1, 4999),5)
-        records.append((users_id,amount_of_expense,location,category_of_expense,time_of_action,is_an_anomaly))     
+        records.append((users_id,amount_of_expense,location,category_of_expense,time_of_action,is_an_anomaly))
 
     insert_query = """
     INSERT INTO recorded_transactions_of_money 
@@ -37,19 +39,12 @@ def datas_of_database(num_of_records=1000):
     """
 
     cursor.executemany(insert_query, records)
-    conn.commit()   
+    conn.commit()
     cursor.close()
     conn.close()
+    print(f"Inserted {num_of_records} records.")
 
-   
-        
 
 if __name__ == "__main__":
-        datas_of_database()
-    
-
-    
-
-
-
-
+ 
+    datas_of_database(clear_existing="--keep" not in sys.argv)

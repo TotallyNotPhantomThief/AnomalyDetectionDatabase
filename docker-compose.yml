@@ -18,6 +18,9 @@ services:
     build: .
     container_name: anomaly_python_app
     env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy

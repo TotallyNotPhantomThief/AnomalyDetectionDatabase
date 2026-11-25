@@ -3,17 +3,11 @@ import psycopg2
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics import precision_score,recall_score,f1_score
 from preprocessing import preprocess, build_transformer
+from db_config import get_db_config
 
-db_config = {
-    "host": "localhost",
-    "port": 5433,
-    "database": "anomaly_database",
-    "user": "postgres",
-    "password": "mypassword"
-}
 
 def run_detection_anomaly():
-    conn = psycopg2.connect(**db_config)
+    conn = psycopg2.connect(**get_db_config())
 
     print("Taking data from database.")
     df = preprocess(conn)
@@ -81,9 +75,6 @@ def run_detection_anomaly():
 
 if __name__ == "__main__":
  run_detection_anomaly()
-    
-
-
 
     
     
